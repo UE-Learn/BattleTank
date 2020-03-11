@@ -2,6 +2,10 @@
 
 
 #include "Tank.h"
+#include "TankAimingComponent.h"
+#include "TankBarrel.h"
+#include "Projectile.h"
+#include "Engine/World.h"
 
 // Sets default values
 ATank::ATank()
@@ -19,18 +23,10 @@ void ATank::BeginPlay()
 	
 }
 
-// Called every frame
-void ATank::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
 // Called to bind functionality to input
 void ATank::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
 
 
@@ -42,19 +38,30 @@ void ATank::AimAt(const FVector& TargetLocation)
 	}
 }
 
-void ATank::SetBarrelReference(UStaticMeshComponent* BarrelToSet)
+void ATank::SetBarrelReference(UTankBarrel* BarrelToSet)
 {
+	Barrel = BarrelToSet;
 	if (AimingComponent)
 	{
 		AimingComponent->SetBarrelReference(BarrelToSet);
 	}
 }
 
-void ATank::SetTurretReference(UStaticMeshComponent* TurretToSet)
+void ATank::SetTurretReference(UTankTurret* TurretToSet)
 {
 	if (AimingComponent)
 	{
 		AimingComponent->SetTurretReference(TurretToSet);
 	}
+}
+
+void ATank::Fire()
+{
+	if (!Barrel || !ProjectileBlueprint) return;
+	FVector TargetLocation = Barrel->GetSocketLocation(FName("Projectile"));
+	FRotator TargetRotation = Barrel->GetSocketRotation(FName("Projectile"));
+	FActorSpawnParameters Parameters;
+	GetWorld()->SpawnActor<AProjectile>(ProjectileBlueprint, TargetLocation, TargetRotation);
+	UE_LOG(LogTemp, Warning, TEXT("Fire!"));
 }
 

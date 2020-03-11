@@ -1,9 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+#include "TankPlayerController.h"
 #include "Tank.h"
 #include "Engine/World.h"
-#include "TankPlayerController.h"
+#include "DrawDebugHelpers.h"
 
 ATankPlayerController::ATankPlayerController()
 {
@@ -34,7 +35,6 @@ void ATankPlayerController::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
     AimTowardsCrosshair();
-    // UE_LOG(LogTemp, Warning, TEXT("Player controller tick"));
 }
 
 
@@ -55,9 +55,9 @@ bool ATankPlayerController::GetLookDirection(FVector& LookDirection) const
     int32 ViewPortSizeX, ViewPortSizeY;
     GetViewportSize(ViewPortSizeX, ViewPortSizeY);
     FVector2D ScreenLocation(ViewPortSizeX * CrossHairLocationX, ViewPortSizeY * CrossHairLocationY);
-    
+
     FVector WorldLocation;
-    return DeprojectScreenPositionToWorld(ScreenLocation.X, ScreenLocation.X, WorldLocation, LookDirection);
+    return DeprojectScreenPositionToWorld(ScreenLocation.X, ScreenLocation.Y, WorldLocation, LookDirection);
 }
 
 bool ATankPlayerController::GetSightRayHitLocation(FVector& HitLocation) const
@@ -68,6 +68,7 @@ bool ATankPlayerController::GetSightRayHitLocation(FVector& HitLocation) const
         FHitResult HitResult;
         FVector Start = PlayerCameraManager->GetCameraLocation();
         FVector End = Start + LookDirection * LineTraceRange;
+
         FCollisionQueryParams CollisionParams;
         CollisionParams.AddIgnoredActor(GetControlledTank());
         if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, CollisionParams))
@@ -75,7 +76,7 @@ bool ATankPlayerController::GetSightRayHitLocation(FVector& HitLocation) const
             AActor* HitActor = HitResult.GetActor();
             if (HitActor)
             {
-                // UE_LOG(LogTemp, Warning, TEXT("aiming actor %s"), *HitActor->GetName());
+                UE_LOG(LogTemp, Warning, TEXT("aiming actor %s"), *HitActor->GetName());
                 HitLocation = HitResult.Location;
                 return true;
             }
