@@ -76,7 +76,7 @@ bool ATankPlayerController::GetSightRayHitLocation(FVector& HitLocation) const
             AActor* HitActor = HitResult.GetActor();
             if (HitActor)
             {
-                UE_LOG(LogTemp, Warning, TEXT("aiming actor %s"), *HitActor->GetName());
+                // UE_LOG(LogTemp, Warning, TEXT("aiming actor %s"), *HitActor->GetName());
                 HitLocation = HitResult.Location;
                 return true;
             }
