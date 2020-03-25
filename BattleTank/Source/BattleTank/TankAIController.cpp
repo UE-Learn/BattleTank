@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "TankAIController.h"
 #include "Tank.h"
 #include "TankPlayerController.h"
 #include "Engine/World.h"
-#include "TankAIController.h"
 
 
 void ATankAIController::BeginPlay()
@@ -58,7 +58,28 @@ void ATankAIController::AimTowardsPlayer()
         if (Tank)
         {
             Tank->AimAt(Player->GetActorLocation());
-            Tank->Fire();
+            //Tank->Fire();
+            // MoveToActor(Player, 4000.f);
+            BPMoveToLocation(Player->GetActorLocation());
+        }
+    }
+}
+
+void ATankAIController::SomeFunc(FVector TargetLocation)
+{
+    UE_LOG(LogTemp, Warning, TEXT("sdfs"));
+    // MoveToLocation(FVector(0.f));
+    auto Player = GetPlayerTank();
+    if (Player)
+    {
+        auto Tank = GetControlledTank();
+        if (Tank)
+        {
+            // Tank->AimAt(Player->GetActorLocation());
+            //Tank->Fire();
+            UE_LOG(LogTemp, Warning, TEXT("2323"));
+            // MoveToActor(Player, 4000.f);
+            BPMoveToLocation(TargetLocation);
         }
     }
 }

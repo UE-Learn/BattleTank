@@ -7,6 +7,7 @@
 #include "TankAIController.generated.h"
 
 class ATank;
+class AACtor;
 /**
  * 
  */
@@ -19,6 +20,12 @@ public:
 	void BeginPlay() override;
 
 	void Tick(float DeltaTime) override;
+
+	UFUNCTION(BlueprintImplementableEvent, meta=(DisplayName = "Call AI Move To from BP"))
+	void BPMoveToLocation(FVector TargetLocation);
+
+	UFUNCTION(BlueprintCallable, Category = Ddd)
+	void SomeFunc(FVector TargetLocation);
 
 private:
 	void AimTowardsPlayer();

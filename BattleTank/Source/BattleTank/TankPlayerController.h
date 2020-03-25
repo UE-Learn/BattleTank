@@ -10,7 +10,7 @@ class ATank;
 /**
  * 
  */
-UCLASS()
+UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BATTLETANK_API ATankPlayerController : public APlayerController
 {
 	GENERATED_BODY()

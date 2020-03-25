@@ -1,11 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "TankAimingComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/StaticMeshComponent.h"
 #include "TankBarrel.h"
 #include "TankTurret.h"
-#include "TankAimingComponent.h"
 
 // Sets default values for this component's properties
 UTankAimingComponent::UTankAimingComponent()
@@ -51,7 +51,7 @@ void UTankAimingComponent::AimAt(const FVector& TargetLocation, float LaunchSpee
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("no solution"));
+			// UE_LOG(LogTemp, Warning, TEXT("no solution"));
 		}
 	}
 
