@@ -6,6 +6,7 @@
 #include "AIController.h"
 #include "TankAIController.generated.h"
 
+class UTankAimingComponent;
 class ATank;
 class AACtor;
 /**
@@ -24,7 +25,7 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, meta=(DisplayName = "Call AI Move To from BP"))
 	void BPMoveToLocation(FVector TargetLocation);
 
-	UFUNCTION(BlueprintCallable, Category = Ddd)
+	UFUNCTION(BlueprintCallable, Category = "Ddd")
 	void SomeFunc(FVector TargetLocation);
 
 private:
@@ -32,4 +33,6 @@ private:
 
 	ATank* GetControlledTank() const;
 	ATank* GetPlayerTank() const;
+
+	UTankAimingComponent* AimingComponent = nullptr;
 };

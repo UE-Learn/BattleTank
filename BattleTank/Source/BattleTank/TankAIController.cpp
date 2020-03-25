@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "TankAIController.h"
+#include "TankAimingComponent.h"
 #include "Tank.h"
 #include "TankPlayerController.h"
 #include "Engine/World.h"
@@ -10,19 +11,11 @@ void ATankAIController::BeginPlay()
 {
     Super::BeginPlay();
     auto Tank = GetControlledTank();
-    if (Tank)
+    if (ensure(Tank))
     {
-        UE_LOG(LogTemp, Warning, TEXT("Tank AI Controller controls tank: %s"), *Tank->GetName());
-    }
-    else
-    {
-        UE_LOG(LogTemp, Error, TEXT("Tank AI Controller controls no tank"));
+        AimingComponent = Tank->FindComponentByClass<UTankAimingComponent>();
     }
     auto PlayerTank = GetPlayerTank();
-    if (!PlayerTank)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Tank AI Controller could not find player tank"));
-    }
 }
 
 ATank* ATankAIController::GetControlledTank() const
@@ -54,11 +47,11 @@ void ATankAIController::AimTowardsPlayer()
     auto Player = GetPlayerTank();
     if (Player)
     {
-        auto Tank = GetControlledTank();
-        if (Tank)
+        if (AimingComponent)
         {
-            Tank->AimAt(Player->GetActorLocation());
-            //Tank->Fire();
+            AimingComponent->AimAt(Player->GetActorLocation());
+            // AimingComponent->Fire();
+            
             // MoveToActor(Player, 4000.f);
             BPMoveToLocation(Player->GetActorLocation());
         }
