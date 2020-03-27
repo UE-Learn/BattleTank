@@ -7,6 +7,7 @@
 #include "Projectile.generated.h"
 
 class UProjectileMovementComponent;
+class UStaticMeshComponent;
 
 UCLASS()
 class BATTLETANK_API AProjectile : public AActor
@@ -29,7 +30,13 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere)
 	UProjectileMovementComponent* ProjectileMovement = nullptr;
+
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* CollisionMesh = nullptr;
+
+	UPROPERTY(VisibleAnywhere)
+	UParticleSystemComponent* LaunchBlast = nullptr;
 
 };

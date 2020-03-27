@@ -12,6 +12,7 @@ enum class EFiringState : uint8
 {
 	Reloading,
 	Aiming,
+	NoAmmo,
 	Locked
 };
 
@@ -39,6 +40,11 @@ public:
 
 	void AimAt(const FVector& TargetLocation);
 
+	EFiringState GetFiringState() const;
+	
+	UFUNCTION(BlueprintCallable, Category = "Firing")
+	int32 GetAmmo() const;
+
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "State")
 	EFiringState FiringState = EFiringState::Reloading;
@@ -51,6 +57,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Firing")
 	float ReloadTimeInSeconds = 3.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Firing")
+	int32 Ammo = 3;
 
 	double LastFireTime = 0;
 

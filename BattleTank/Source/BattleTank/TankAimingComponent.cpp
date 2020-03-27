@@ -31,21 +31,21 @@ void UTankAimingComponent::TickComponent(float DeltaTime, enum ELevelTick TickTy
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	double CurrentTime = FPlatformTime::Seconds();
-	bool bReloaded = (CurrentTime - LastFireTime) > ReloadTimeInSeconds;
-	if (bReloaded) 
+	if (Ammo <= 0)
 	{
-		if (IsBarrelMoving())
-		{
-			FiringState = EFiringState::Aiming;
-		}
-		else
-		{
-			FiringState = EFiringState::Locked;
-		}
+		FiringState = EFiringState::NoAmmo;
+	}
+	else if ((CurrentTime - LastFireTime) < ReloadTimeInSeconds) 
+	{
+		FiringState = EFiringState::Reloading;
+	}
+	else if (IsBarrelMoving())
+	{
+		FiringState = EFiringState::Aiming;
 	}
 	else
 	{
-		FiringState = EFiringState::Reloading;
+		FiringState = EFiringState::Locked;
 	}
 }
 
@@ -83,9 +83,7 @@ void UTankAimingComponent::AimAt(const FVector& TargetLocation)
 
 void UTankAimingComponent::Fire()
 {
-	UE_LOG(LogTemp, Warning, TEXT("fire %s"), *GetOwner()->GetName());
-
-	if (FiringState == EFiringState::Reloading) return;
+	if (FiringState != EFiringState::Locked && FiringState != EFiringState::Aiming) return;
 	if (!ensure(Barrel) || !ensure(ProjectileBlueprint)) return;
 
 	FVector TargetLocation = Barrel->GetSocketLocation(FName("Projectile"));
@@ -93,8 +91,10 @@ void UTankAimingComponent::Fire()
 	FActorSpawnParameters Parameters;
 	auto Projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileBlueprint, TargetLocation, TargetRotation);
 	Projectile->Launch(LaunchSpeed);
+	--Ammo;
 
 	LastFireTime = FPlatformTime::Seconds();
+	FiringState = EFiringState::Reloading;
 }
 
 void UTankAimingComponent::MoveBarrelTowards(const FVector& AimDirection)
@@ -105,6 +105,10 @@ void UTankAimingComponent::MoveBarrelTowards(const FVector& AimDirection)
 	auto DeltaRotator = AimAsRotator - BarrelRotation;	
 
 	Barrel->Elevate(DeltaRotator.Pitch);
+	if (FMath::Abs(DeltaRotator.Yaw) > 180.f)
+	{
+		DeltaRotator.Yaw = -FMath::Abs(DeltaRotator.Yaw);
+	}
 	Turret->Rotate(DeltaRotator.Yaw);
 }
 
@@ -112,6 +116,16 @@ void UTankAimingComponent::Initialize(UTankBarrel* BarrelToSet, UTankTurret* Tur
 {
 	Barrel = BarrelToSet;
 	Turret = TurretToSet;
+}
+
+EFiringState UTankAimingComponent::GetFiringState() const
+{
+	return FiringState;
+}
+
+int32 UTankAimingComponent::GetAmmo() const
+{
+	return Ammo;
 }
 
 

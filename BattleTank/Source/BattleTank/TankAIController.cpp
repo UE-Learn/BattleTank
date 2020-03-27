@@ -10,21 +10,14 @@
 void ATankAIController::BeginPlay()
 {
     Super::BeginPlay();
-    auto Tank = GetControlledTank();
+    auto Tank = GetPawn();
     if (ensure(Tank))
     {
         AimingComponent = Tank->FindComponentByClass<UTankAimingComponent>();
     }
-    auto PlayerTank = GetPlayerTank();
 }
 
-ATank* ATankAIController::GetControlledTank() const
-{
-    // return nullptr;
-    return Cast<ATank>(GetPawn());
-}
-
-ATank* ATankAIController::GetPlayerTank() const
+APawn* ATankAIController::GetPlayerTank() const
 {
     if (auto PlayerController = Cast<ATankPlayerController>(GetWorld()->GetFirstPlayerController()))
     {
@@ -50,7 +43,11 @@ void ATankAIController::AimTowardsPlayer()
         if (AimingComponent)
         {
             AimingComponent->AimAt(Player->GetActorLocation());
-            // AimingComponent->Fire();
+
+            if (AimingComponent->GetFiringState() == EFiringState::Locked)
+            {
+                AimingComponent->Fire();
+            }
             
             // MoveToActor(Player, 4000.f);
             BPMoveToLocation(Player->GetActorLocation());
@@ -65,7 +62,7 @@ void ATankAIController::SomeFunc(FVector TargetLocation)
     auto Player = GetPlayerTank();
     if (Player)
     {
-        auto Tank = GetControlledTank();
+        auto Tank = GetPawn();
         if (Tank)
         {
             // Tank->AimAt(Player->GetActorLocation());

@@ -28,11 +28,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Ddd")
 	void SomeFunc(FVector TargetLocation);
 
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Pathfind")
+	float AcceptanceRadius = 3000.f;
+
 private:
 	void AimTowardsPlayer();
 
-	ATank* GetControlledTank() const;
-	ATank* GetPlayerTank() const;
+	APawn* GetPlayerTank() const;
 
 	UTankAimingComponent* AimingComponent = nullptr;
 };
