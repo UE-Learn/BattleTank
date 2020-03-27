@@ -12,3 +12,20 @@ ATank::ATank()
 	// AimingComponent = CreateDefaultSubobject<UTankAimingComponent>(FName("Aiming Component"));
 }
 
+float ATank::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) 
+{
+	int32 DamagePoints = FPlatformMath::RoundToInt(DamageAmount);
+	auto DamageToApply = FMath::Clamp<int32>(DamagePoints, 0, CurrentHealth);
+	UE_LOG(LogTemp, Warning, TEXT("Taking %i damage"), DamageToApply);
+
+	CurrentHealth -= DamageToApply;
+
+	return DamageToApply;
+}
+
+float ATank::GetHealthPercent() const
+{
+	return (float)CurrentHealth / (float)StartingHealth;
+}
+
+

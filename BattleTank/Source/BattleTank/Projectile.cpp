@@ -5,6 +5,8 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "PhysicsEngine/RadialForceComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 
 // Sets default values
@@ -22,14 +24,64 @@ AProjectile::AProjectile()
 	CollisionMesh->SetVisibility(false);
 
 	LaunchBlast = CreateDefaultSubobject<UParticleSystemComponent>(FName("Launch Blast"));
-	LaunchBlast->AttachTo(RootComponent);
+	LaunchBlast->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
+
+	ImpactBlast = CreateDefaultSubobject<UParticleSystemComponent>(FName("Impact Blast"));
+	ImpactBlast->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
+	ImpactBlast->bAutoActivate = false;
+
+	ExplosionForce = CreateDefaultSubobject<URadialForceComponent>(FName("Explosion Force"));
+	ExplosionForce->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 }
 
 // Called when the game starts or when spawned
 void AProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	if (CollisionMesh)
+	{
+    	CollisionMesh->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
+	}
+}
+
+void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	// if (!bExploded)
+	{
+		bExploded = true;
+		if (LaunchBlast)
+		{
+			LaunchBlast->Deactivate();
+		}
+		if (ImpactBlast)
+		{
+			ImpactBlast->Activate();
+			SetRootComponent(ImpactBlast);
+		}
+		if (ExplosionForce)
+		{
+			ExplosionForce->FireImpulse();
+			UGameplayStatics::ApplyRadialDamage(
+				this, 
+				ProjectileDamage,
+				GetActorLocation(),
+				ExplosionForce->Radius,
+				UDamageType::StaticClass(),
+				TArray<AActor*>()
+			);
+		}
+		if (CollisionMesh)
+		{
+			CollisionMesh->DestroyComponent();
+		}
+		FTimerHandle SomeHandle;
+		GetWorld()->GetTimerManager().SetTimer(SomeHandle, this, &AProjectile::OnTimerExpire, DestroyDelay, false);
+	}
+}
+
+void AProjectile::OnTimerExpire()
+{
+	Destroy();
 }
 
 // Called every frame

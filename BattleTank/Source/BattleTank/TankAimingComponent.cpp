@@ -97,11 +97,11 @@ void UTankAimingComponent::Fire()
 	FiringState = EFiringState::Reloading;
 }
 
-void UTankAimingComponent::MoveBarrelTowards(const FVector& AimDirection)
+void UTankAimingComponent::MoveBarrelTowards(const FVector& TargetLocation)
 {
 	if (!Barrel || !Turret) return;
 	auto BarrelRotation = Barrel->GetForwardVector().Rotation();
-	auto AimAsRotator = AimDirection.Rotation();
+	auto AimAsRotator = TargetLocation.Rotation();
 	auto DeltaRotator = AimAsRotator - BarrelRotation;	
 
 	Barrel->Elevate(DeltaRotator.Pitch);
